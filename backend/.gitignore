@@ -67,3 +67,10 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
+
+
+# Ignore all files in uploads/
+uploads/*
+
+# But keep the uploads/ folder itself
+!uploads/.gitkeep

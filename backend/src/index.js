@@ -1,0 +1,121 @@
+const express = require("express");
+const app = express(); 
+const bodyParser = require("body-parser");
+const fs = require("fs");
+const multer = require("multer");
+const path = require("path");
+
+
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "uploads/");
+    },
+    filename: (req, file, cb) => {
+      // Save with the username in the filename
+      const ext = path.extname(file.originalname); // like .jpeg or .png
+      cb(null, `${req.body.username}_icon${ext}`);
+    }
+});
+  
+const upload = multer({
+    storage,
+    limits: { fileSize: 5 * 1024 * 1024 } // Max file size: 5MB
+});
+
+
+app.use(express.json());
+
+
+const port = 3000
+
+
+
+app.get ("/", (reg, res) => {
+    return res.status (200).send("Hi there what is up");
+});
+app.get("/", (req, res) => {
+    const user = req.query.user;
+    res.send(user + "!");
+});
+
+const users = [];
+
+
+
+
+app.post("/create_user", upload.single("img"), (req, res) => {
+    const { username, password } = req.body;
+    const iconPath = req.file.path;
+  
+    // Save user data including icon path
+    users.push({ username, password, iconPath });
+  
+    console.log(users); // Debug log
+    res.status(200).json({ loggedIn: true, username, icon: iconPath });
+  });
+
+app.get("/users", (_,res) => {
+    res.json(users);
+});
+
+app.delete("/delete_user", (req, res, next) => 
+{
+    
+    const {username, password} = req.body;
+
+    const existingUser = users.find(u => u.username === username && u.password === password);
+    console.log(existingUser);
+
+    if(existingUser === -1)
+    {
+        res.status(401).json({errorStatus: "Credentials did not match"});
+
+
+    }
+
+    users.splice(users.indexOf(existingUser), 1);
+    res.json(users)
+
+
+
+})
+
+const listings = [];
+app.post("/create_listing",  (req, res) => {
+    
+    const { listing } = req.body;
+    
+    listings.push({ title: listing.title, price: listing.price, description: listing.description});
+
+    console.log(listing);
+
+    res.json({listingCreated: true})
+})
+app.get("/listings", (_,res) => {
+    res.json(listings);
+});
+
+app.delete("/delete_listing", (req, res, next) => 
+{
+    
+    const { listing } = req.body;
+
+    const existingListing = listings.findIndex(l => l.title === listing.title && l.price === listing.price && l.description === listing.description);
+
+    console.log(existingListing);
+
+    if(existingListing === -1)
+    {
+        res.status(401).json({errorStatus: "Credentials did not match"});
+    }
+
+    listings.splice(existingListing, 1);
+    res.json(listings)
+
+});
+
+app.listen(port, () => {
+    console.log("Example app listening on port " + port)
+});
+
