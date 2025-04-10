@@ -1,0 +1,11 @@
+# Setup
+
+1. install nodejs
+
+2. run "npm install"
+
+3. run "npm install nodemon express body-parser multer"
+
+# Run the server
+
+1. npm run start
