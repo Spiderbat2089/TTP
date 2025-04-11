@@ -33,5 +33,37 @@
                 </div>
             </main>
         </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", async () => {
+                const params = new URLSearchParams(window.location.search);
+                const title = params.get("title");
+            
+                if (!title) {
+                    return alert("No product title found in URL.");
+                }
+            
+                try {
+                    const res = await fetch("http://localhost:3000/listings");
+                    const listings = await res.json();
+            
+                    const product = listings.find(item => item.title === title);
+            
+                    if (!product) {
+                        return alert("Product not found.");
+                    }
+        
+                    document.getElementById("product_image").src = product.image;
+            
+                    document.querySelector("#product_info_container h2").textContent = `${product.title} - ${product.price} Gold`;
+                    document.getElementById("description").textContent = product.description;
+            
+                    document.getElementById("user_name").textContent = "Posted By: Unknown";
+            
+                } catch (err) {
+                    console.error(err);
+                    alert("Failed to load product.");
+                }
+            });
+            </script>
     </body>
 </html>
