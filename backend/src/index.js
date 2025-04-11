@@ -81,17 +81,17 @@ app.delete("/delete_user", (req, res, next) =>
 
 })
 
-//Listing template:  {title: "", price: 0, description: ""}
+//Listing template:  {title: "", price: 0, description: "", image: "../../frontend/Images/"}
 //Thank me later, you know you will
-const listings = [{title: "John's Trusty Sword", price: 15, description: "My sword I have been using for 13 years. In great condition! Definitely won't break on the next hit."}, 
-    {title: "Machete", price: 20, description: "Used to carve meat, and wasn't used for illegal activity."}, 
-    {title: "Shield", price: 5, description: "My father's shield used in the battle of Big Creek River. I know what I got, so no price changes."}, 
-    {title: "Sword of The Gods", price: 150, description: "Found by the old mill. It looks cool, so I will be selling this thing. Everytime I pick it up voices in my head tell me to commit crimes, so I figured I should get rid of it."}];
+const listings = [{title: "John's Trusty Sword", price: 15, description: "My sword I have been using for 13 years. In great condition! Definitely won't break on the next hit.", image: "../../frontend/Images/product1.JPG"}, 
+    {title: "Machete", price: 20, description: "Used to carve meat, and wasn't used for illegal activity.", image: "../../frontend/Images/product2.JPG"}, 
+    {title: "Shield", price: 5, description: "My father's shield used in the battle of Big Creek River. I know what I got, so no price changes.", image: "../../frontend/Images/product3.JPG"}, 
+    {title: "Sword of The Gods", price: 150, description: "Found by the old mill. It looks cool, so I will be selling this thing. Everytime I pick it up voices in my head tell me to commit crimes, so I figured I should get rid of it.", image: "../../frontend/Images/product4.JPG"}];
 app.post("/create_listing",  (req, res) => {
     
     const { listing } = req.body;
     
-    listings.push({ title: listing.title, price: listing.price, description: listing.description});
+    listings.push({ title: listing.title, price: listing.price, description: listing.description, image: listing.image});
 
     console.log(listing);
 
