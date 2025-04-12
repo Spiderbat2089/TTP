@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Trading Post Profile Page</title>
+  <link rel="stylesheet" href="TradingPost.css">
+  <link rel="icon" href="./images/logo.png" type="image/x-icon">
+</head>
+
+<body>
+  <div id="wrapper">
+    <header id="banner">
+      <div id="banner_wraps">
+        <a href="Index.html"><img id="left_content_img" src="images/logo.png" width="50" height="50"
+            alt="Main Icon"></a>
+        <h1>The Trading Post</h1>
+        <div id="search_container">
+          <input type="text" id="search_bar" placeholder="Seek Out Goods...">
+        </div>
+        <img id="cart_image" src="images/pouch.png" width="50" height="50" alt="Cart Icon">
+        <a href="Profile.html" id="profile_link">
+          <img id="right_content_img" src="images/SkullProfile.jpg" width="50" height="50" alt="Profile Icon">
+        </a>
+      </div>
+    </header>
+    <main id="login_page_main">
+      <div id="login_form_container">
+        <h2>Create Thy Trading Post Account</h2>
+        <form id="createUserForm" enctype="multipart/form-data">
+          <label for="username">Name:</label><br />
+          <input type="text" name="username" id="username" required /><br /><br />
+
+          <label for="password">Password:</label><br />
+          <input type="password" name="password" id="password" required /><br /><br />
+
+          <label for="img">Profile Image:</label><br />
+          <input type="file" name="img" id="img" accept="image/*" /><br /><br />
+
+          <label for="description">Description:</label><br />
+          <input type="text" name="description" id="description" placeholder="Describe thyself..." /><br /><br />
+
+          <button type="submit">Create Account</button>
+        </form>
+        <p id="message"></p>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const form = document.getElementById("createUserForm");
+    const message = document.getElementById("message");
+
+    form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+    const usernameInput = document.getElementById("username").value;
+
+    try {
+        const response = await fetch("http://localhost:3000/create_user", {
+            method: "POST",
+            body: formData
+        });
+
+        const data = await response.json();
+
+        if (data.loggedIn) {
+            window.location.href = `Profile.html?username=${encodeURIComponent(usernameInput)}`;
+        } else {
+            message.textContent = "Failed to create account.";
+        }
+    } catch (err) {
+        console.error("Error creating account:", err);
+        message.textContent = "Something went wrong.";
+    }
+});
+  </script>
+</body>
+
+</html>

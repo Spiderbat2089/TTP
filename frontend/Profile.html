@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -10,14 +10,14 @@
     <div id="wrapper">
         <header id="banner">
             <div id="banner_wraps">
-                <a href="Index.html"><img id="left_content_img" src="images/logo.png" width="50px" height="50px" alt="Main Icon"></a>
+                <a href="Index.html"><img id="left_content_img" src="images/logo.png" width="50" height="50" alt="Main Icon"></a>
                 <h1>The Trading Post</h1>
                 <div id="search_container">
                     <input type="text" id="search_bar" placeholder="Seek Out Goods...">
                 </div>
-                <img id="cart_image" src="images/pouch.png" width="50px" height="50px" alt="Cart Icon">
+                <img id="cart_image" src="images/pouch.png" width="50" height="50" alt="Cart Icon">
                 <a href="Profile.html" id="profile_link">
-                    <img id="right_content_img" src="images/SkullProfile.jpg" width="50px" height="50px" alt="Profile Icon">
+                    <img id="right_content_img" src="images/SkullProfile.jpg" width="50" height="50" alt="Profile Icon">
                 </a>
             </div>
         </header>
@@ -25,37 +25,65 @@
         <main>
             <div id="product_page_container">
                 <div id="product_image_container">
-                    <img id="product_image" src="images/SkullProfile.jpg" width="360px" height="360px" alt="Profile Image">
+                    <img id="product_image" src="images/SkullProfile.jpg" width="360" height="360" alt="Profile Image">
                 </div>
                 <div id="product_info_container">
-                    <h2>Antonio Frankfern</h2>
-                    <p id="user_name">Farmer</p>
-                    <p id="description">Description of you. Talk about what you like doing, or your job.</p>
-                    <button id="create_listing">Create Listing</button>
-                    <button id="account_options">Account Options</button>
-                    <button id="sign_out">Sign Out</button>
+                    <h2 id="username">Loading...</h2>
+                    <p id="user_name">Loading role...</p>
+                    <p id="user_description">Loading description...</p>
+
+                    <button class="styled-button">Create Listing</button>
+                    <button class="styled-button">Account Options</button>
+                    <a href="Login.html" class="button-link">Create Account</a>
                 </div>
             </div>
         </main>
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", async () => {
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const username = urlParams.get("username");
+       document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const username = urlParams.get("username");
 
-                const response = await fetch(`http://localhost:3000/profile/${username}`);
-                const userProfile = await response.json();
+        if (!username) {
+            alert("No username provided in URL.");
+            return;
+        }
 
-                document.querySelector("#product_image").src = userProfile.iconPath;
-                document.querySelector("h2").textContent = userProfile.username;
-                document.querySelector("#user_name").textContent = userProfile.role;
-                document.querySelector("#description").textContent = userProfile.description;
-            } catch (error) {
-                console.error("Failed to load user profile:", error);
-            }
-        });
+        const response = await fetch(`http://localhost:3000/profile/${username}`);
+        if (!response.ok) throw new Error("User not found");
+
+        const user = await response.json();
+
+        document.querySelector("#product_image").src = user.iconPath || "images/SkullProfile.jpg";
+        document.querySelector("#product_image").alt = `${user.username}'s Profile Image`;
+        document.querySelector("#username").textContent = user.username;
+        document.querySelector("#user_name").textContent = user.role || "Adventurer";
+        document.querySelector("#user_description").textContent = user.description || "No description available.";
+
+        localStorage.setItem("loggedInUser", JSON.stringify(user));
+    } catch (error) {
+        console.error("Error loading profile:", error);
+        alert("Failed to load profile.");
+    }
+
+    document.getElementById("create_listing").addEventListener("click", () => {
+        const user = JSON.parse(localStorage.getItem("loggedInUser"));
+        if (user) {
+            window.location.href = `CreateListing.html?username=${encodeURIComponent(user.username)}`;
+        }
+    });
+
+    document.getElementById("account_options").addEventListener("click", () => {
+        alert("Feature coming soon!");
+    });
+
+    document.getElementById("sign_out").addEventListener("click", () => {
+        localStorage.removeItem("loggedInUser");
+        window.location.href = "Index.html";
+    });
+});
     </script>
 </body>
 </html>

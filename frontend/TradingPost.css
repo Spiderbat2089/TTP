@@ -25,6 +25,51 @@ a:visited {color: #C1785C;}
 
 a:active {color: #836a49;}
 
+.button-link {display: block;
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #b1edc3;
+            color: white !important;
+            font-size: 18px;
+            text-align: center;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 0;
+}
+
+.button-link:hover {
+    background-color: #CC6D3B;
+}
+
+.button-link:active {
+    background-color: #836a49;
+}
+.styled-button {display: block;
+                width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #b1edc3;
+            color: white !important;
+            font-size: 18px;
+            text-align: center;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            border-radius: 0;
+            font-family: inherit;
+}
+
+.styled-button:hover {
+    background-color: #CC6D3B;
+}
+
+.styled-button:active {
+    background-color: #836a49;
+}
 #wrapper {width: 100%;
         height: 100%;}
 

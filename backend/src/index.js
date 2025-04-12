@@ -8,7 +8,7 @@ const path = require("path");
 
 const cors = require("cors");
 app.use(cors());
-
+app.use('/uploads', express.static('uploads'));
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
       cb(null, "uploads/");
@@ -47,15 +47,20 @@ const users = [];
 
 
 app.post("/create_user", upload.single("img"), (req, res) => {
-    const { username, password } = req.body;
-    const iconPath = req.file.path;
-  
-    // Save user data including icon path
-    users.push({ username, password, iconPath });
-  
+    const { username, password, role = "Adventurer", description = "No description available." } = req.body;
+    const iconPath = req.file ? req.file.path : "images/SkullProfile.jpg";
+
+    users.push({
+        username,
+        password,
+        iconPath,
+        role,
+        description
+    });
+
     console.log(users); // Debug log
     res.status(200).json({ loggedIn: true, username, icon: iconPath });
-  });
+});
 
 app.get("/users", (_,res) => {
     res.json(users);
@@ -82,7 +87,29 @@ app.delete("/delete_user", (req, res, next) =>
 
 
 })
+app.get("/profile/:username", (req, res) => {
+    const { username } = req.params;
+    const user = users.find(u => u.username === username);
 
+    if (!user) {
+        return res.status(404).json({ error: "User not found" });
+    }
+
+    //Used this as a placeholder if user doesn't input anything
+    const role = user.role || "Peasant";
+    const description = user.description || "No description provided.";
+
+    res.json({
+        username: user.username,
+        role,
+        description,
+        iconPath: `http://localhost:3000/${user.iconPath.replace(/\\/g, "/")}` 
+    });
+});
+
+
+
+  
 //Listing template:  {title: "", price: 0, description: "", image: "../../frontend/Images/"}
 //Thank me later, you know you will
 const listings = [
