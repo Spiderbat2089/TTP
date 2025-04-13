@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Trading Post Profile Page</title>
+  <link rel="stylesheet" href="TradingPost.css">
+  <link rel="icon" href="./images/logo.png" type="image/x-icon">
+</head>
+
+<body>
+  <div id="wrapper">
+    <header id="banner">
+      <div id="banner_wraps">
+        <a href="Index.html"><img id="left_content_img" src="images/logo.png" width="50" height="50"
+            alt="Main Icon"></a>
+        <h1>The Trading Post</h1>
+
+        <a href="Pouch.html" id="cart_link">
+          <img src="images/pouch.png" width="50px" height="50px" alt="Cart Icon">
+        </a>
+        <img id="right_content_img" src="images/SkullProfile.jpg" width="50" height="50" alt="Profile Icon">
+        </a>
+        <a href="Profile.html" id="profile_link">
+          <img id="right_content_img" src="images/SkullProfile.jpg" width="50" height="50" alt="Profile Icon">
+        </a>
+      </div>
+    </header>
+    <main id="login_page_main">
+      <div id="login_form_container">
+        <h2>Create Thy Listing</h2>
+        <form id="createListingForm" enctype="multipart/form-data">
+          <label for="title">Title of Item:</label><br />
+          <input type="text" name="title" id="title" required><br><br>
+
+          <label for="price">Price (in Gold):</label><br />
+          <input type="number" name="price" id="price" min="0" required><br><br>
+
+          <label for="description">Item Description:</label><br />
+          <textarea name="description" id="description" placeholder="Describe thy wares..." required></textarea><br><br>
+
+          <label for="image">Upload Image:</label><br />
+          <input type="file" name="image" id="image" accept="image/*" required><br><br>
+
+          <button type="submit">List Thy Item</button>
+        </form>
+        <p id="message"></p>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const form = document.getElementById("createListingForm");
+    const message = document.getElementById("message");
+  
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+  
+      const user = JSON.parse(localStorage.getItem("loggedInUser"));
+      if (!user) {
+        alert("Thou must be logged in to list an item.");
+        return;
+      }
+  
+      const imageFile = document.getElementById("image").files[0];
+      if (!imageFile) {
+        message.textContent = "Please upload an image.";
+        return;
+      }
+  
+      const resizedImageBase64 = await resizeImage(imageFile, 240, 240);
+  
+      const listing = {
+        title: document.getElementById("title").value,
+        price: parseFloat(document.getElementById("price").value),
+        description: document.getElementById("description").value,
+        image: resizedImageBase64
+      };
+  
+      try {
+        const response = await fetch("http://localhost:3000/create_listing", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ listing })
+        });
+  
+        const data = await response.json();
+        if (data.listingCreated) {
+          message.textContent = "Thy listing has been posted!";
+          form.reset();
+        } else {
+          message.textContent = "Failed to list item.";
+        }
+      } catch (err) {
+        console.error("Listing failed:", err);
+        message.textContent = "Something went awry...";
+      }
+    });
+  
+    function resizeImage(file, width, height) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        const reader = new FileReader();
+  
+        reader.onload = e => {
+          img.src = e.target.result;
+        };
+  
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL("image/jpeg"));
+        };
+  
+        img.onerror = reject;
+        reader.onerror = reject;
+  
+        reader.readAsDataURL(file);
+      });
+    }
+  </script>
+</body>
+
+</html>

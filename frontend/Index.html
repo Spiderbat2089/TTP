@@ -22,9 +22,8 @@
                     <img src="images/pouch.png" width="50px" height="50px" alt="Cart Icon">
                 </a>
                 <a href="Profile.html" id="profile_link">
-                    <img id="right_content_img" src="images/SkullProfile.jpg" width="50px" height="50px"
-                        alt="Profile Icon">
-                </a>
+                    <img id="right_content_img" src="images/SkullProfile.jpg" width="50" height="50" alt="Profile Icon">
+                  </a>
             </div>
         </header>
 
@@ -33,34 +32,64 @@
         </main>
     </div>
     <script>
-        document.addEventListener("DOMContentLoaded", async () => {
-            try {
-                const response = await fetch("http://localhost:3000/listings");
-                const listings = await response.json();
+        document.addEventListener("DOMContentLoaded", () => {
+    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+    const profileImg = document.getElementById("right_content_img");
 
-                const container = document.getElementById("product-list");
-                container.innerHTML = "";
+    if (user && profileImg) {
+      profileImg.src = user.icon || "images/SkullProfile.jpg";
+      profileImg.alt = `${user.username}'s Profile Icon`;
+    }
+});
+      document.addEventListener("DOMContentLoaded", async () => {
+    const searchBar = document.getElementById("search_bar");
+    const container = document.getElementById("product-list");
 
-                listings.forEach(item => {
-                    const product = document.createElement("div");
-                    product.className = "product_item";
+    async function displayListings(listings) {
+        container.innerHTML = ""; 
 
-                    product.innerHTML = `
-                        <a href="Product.html?title=${encodeURIComponent(item.title)}">
-                            <img src="${item.image}" width="240" height="240" alt="${item.title}">
-                        </a>
-                        <a href="Product.html?title=${encodeURIComponent(item.title)}">
-                            <figcaption>${item.title}<br>${item.price} Gold</figcaption>
-                        </a>
-                    `;
+        listings.forEach(item => {
+            const product = document.createElement("div");
+            product.className = "product_item";
 
-                    container.appendChild(product);
-                });
+            product.innerHTML = `
+                <a href="Product.html?title=${encodeURIComponent(item.title)}">
+                    <!-- Inline style applied directly to img -->
+                    <img src="${item.image}" style="width: 240px; height: 240px; object-fit: cover;" alt="${item.title}">
+                </a>
+                <a href="Product.html?title=${encodeURIComponent(item.title)}">
+                    <figcaption>${item.title}<br>${item.price} Gold</figcaption>
+                </a>
+            `;
 
-            } catch (error) {
-                console.error("Failed to load listings:", error);
-            }
+            container.appendChild(product);
         });
+    }
+
+    try {
+        const response = await fetch("http://localhost:3000/listings");
+        const listings = await response.json();
+        displayListings(listings);
+    } catch (error) {
+        console.error("Failed to load listings:", error);
+    }
+
+    // Search bar functionality
+    searchBar.addEventListener("keypress", async (e) => {
+        if (e.key === "Enter") {
+            const query = searchBar.value.trim();
+            if (!query) return;
+
+            try {
+                const res = await fetch(`http://localhost:3000/search?q=${encodeURIComponent(query)}`);
+                const results = await res.json();
+                displayListings(results);
+            } catch (err) {
+                console.error("Search failed:", err);
+            }
+        }
+    });
+});
     </script>
 </body>
 

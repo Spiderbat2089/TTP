@@ -15,18 +15,15 @@
         <a href="Index.html"><img id="left_content_img" src="images/logo.png" width="50" height="50"
             alt="Main Icon"></a>
         <h1>The Trading Post</h1>
-        <div id="search_container">
-          <input type="text" id="search_bar" placeholder="Seek Out Goods...">
-        </div>
+
         <a href="Pouch.html" id="cart_link">
           <img src="images/pouch.png" width="50px" height="50px" alt="Cart Icon">
-      </a>          
-      <img id="right_content_img" src="images/SkullProfile.jpg" width="50" height="50" alt="Profile Icon">
+        </a>
+        <img id="right_content_img" src="images/SkullProfile.jpg" width="50" height="50" alt="Profile Icon">
         </a>
         <a href="Profile.html" id="profile_link">
-          <img id="right_content_img" src="images/SkullProfile.jpg" width="50px" height="50px"
-              alt="Profile Icon">
-      </a>
+          <img id="right_content_img" src="images/SkullProfile.jpg" width="50" height="50" alt="Profile Icon">
+        </a>
       </div>
     </header>
     <main id="login_page_main">
@@ -53,33 +50,54 @@
   </div>
 
   <script>
+     document.addEventListener("DOMContentLoaded", () => {
+    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+    const profileImg = document.getElementById("right_content_img");
+
+    if (user && profileImg) {
+      profileImg.src = user.icon || "images/SkullProfile.jpg";
+      profileImg.alt = `${user.username}'s Profile Icon`;
+    }
+});
     const form = document.getElementById("createUserForm");
     const message = document.getElementById("message");
 
     form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+      e.preventDefault();
 
-    const formData = new FormData(form);
-    const usernameInput = document.getElementById("username").value;
+      const formData = new FormData(form);
+      const usernameInput = document.getElementById("username").value;
 
-    try {
+      try {
         const response = await fetch("http://localhost:3000/create_user", {
-            method: "POST",
-            body: formData
+          method: "POST",
+          body: formData
         });
 
         const data = await response.json();
 
         if (data.loggedIn) {
-            window.location.href = `Profile.html?username=${encodeURIComponent(usernameInput)}`;
+          const userDescription = document.getElementById("description").value;
+
+          const user = {
+            username: usernameInput,
+            icon: `http://localhost:3000/${data.icon.replace(/\\/g, '/')}`,
+            role: "Adventurer",
+            description: userDescription || "No description available."
+          };
+
+          localStorage.setItem("loggedInUser", JSON.stringify(user));
+
+          window.location.href = `Profile.html?username=${encodeURIComponent(usernameInput)}`;
         } else {
-            message.textContent = "Failed to create account.";
+          message.textContent = "Failed to create account.";
         }
-    } catch (err) {
+      } catch (err) {
         console.error("Error creating account:", err);
         message.textContent = "Something went wrong.";
-    }
-});
+      }
+      
+    });
   </script>
 </body>
 

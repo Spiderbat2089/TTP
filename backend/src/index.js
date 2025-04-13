@@ -6,6 +6,26 @@ const path = require("path");
 
 const cors = require("cors");
 app.use(cors());
+
+
+
+let cart = [];
+
+app.post("/cart/add", (req, res) => {
+    const item = req.body;
+    cart.push(item);
+    res.status(200).json({ added: true });
+});
+
+app.get("/cart", (req, res) => {
+    res.json(cart);
+});
+
+app.post("/cart/checkout", (req, res) => {
+    cart = [];
+    res.json({ checkout: true });
+});
+
 app.use('/uploads', express.static('uploads'));
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {

@@ -1,74 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <link rel="stylesheet" href="TradingPost.css">
-        <title>Trading Post Product Page</title>
-        <meta charset="utf-8">
-        <link rel="icon" type="image/x-icon" href="./images/logo.png">
-    </head>
-    <body>
-        <div id="wrapper">
-            <header id="banner">
-                <div id="banner_wraps">
-                    <a href="Index.html"><img id="left_content_img" src="images/logo.png" width="50px" height="50px" alt="Default Main Icon Place Holder Image"></a>
-                    <h1>The Trading Post</h1>
-                    <div id="search_container">
-                        <input type="text" id="search_bar" placeholder="Seek Out Goods...">
-                    </div>
-                    <a href="Pouch.html" id="cart_link">
-                        <img src="images/pouch.png" width="50px" height="50px" alt="Cart Icon">
-                    </a>
-                    <a href="Profile.html" id="profile_link">
-                        <img id="right_content_img" src="images/SkullProfile.jpg" width="50px" height="50px"
-                            alt="Profile Icon">
-                    </a>
+
+<head>
+    <link rel="stylesheet" href="TradingPost.css">
+    <title>Trading Post Product Page</title>
+    <meta charset="utf-8">
+    <link rel="icon" type="image/x-icon" href="./images/logo.png">
+</head>
+
+<body>
+    <div id="wrapper">
+        <header id="banner">
+            <div id="banner_wraps">
+                <a href="Index.html"><img id="left_content_img" src="images/logo.png" width="50px" height="50px"
+                        alt="Default Main Icon Place Holder Image"></a>
+                <h1>The Trading Post</h1>
+
+                <a href="Pouch.html" id="cart_link">
+                    <img src="images/pouch.png" width="50px" height="50px" alt="Cart Icon">
+                </a>
+                <a href="Profile.html" id="profile_link">
+                    <img id="right_content_img" src="images/SkullProfile.jpg" width="50" height="50" alt="Profile Icon">
+                </a>
+            </div>
+        </header>
+        <main>
+            <div id="product_page_container">
+                <div id="product_image_container">
+                    <img id="product_image" src="images/product1.JPG" width="480px" height="480px"
+                        alt="Default Profile Place Holder Image">
                 </div>
-            </header>
-            <main>
-                <div id="product_page_container">
-                    <div id="product_image_container">
-                        <img id="product_image" src="images/product1.JPG" width="480px" height="480px" alt="Default Profile Place Holder Image">
-                    </div>
-                    <div id="product_info_container">
-                        <h2>John's Trusty Sword-15 Gold</h2>
-                        <p id="user_name">Posted By: John Ferklman</p>
-                        <p id="description">My sword I have been using for 13 years.  In great condition!  Definitely won't break on the next hit.</p>
-                        <button id="add_to_cart">Put in the Pouch</button>
-                    </div>
+                <div id="product_info_container">
+                    <h2>John's Trusty Sword-15 Gold</h2>
+                    <p id="user_name">Posted By: John Ferklman</p>
+                    <p id="description">My sword I have been using for 13 years. In great condition! Definitely won't
+                        break on the next hit.</p>
+                    <button id="add_to_cart">Put in the Pouch</button>
                 </div>
-            </main>
-        </div>
-        <script>
-            document.addEventListener("DOMContentLoaded", async () => {
-                const params = new URLSearchParams(window.location.search);
-                const title = params.get("title");
-            
-                if (!title) {
-                    return alert("No product title found in URL.");
+            </div>
+        </main>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const user = JSON.parse(localStorage.getItem("loggedInUser"));
+            const profileImg = document.getElementById("right_content_img");
+
+            if (user && profileImg) {
+                profileImg.src = user.icon || "images/SkullProfile.jpg";
+                profileImg.alt = `${user.username}'s Profile Icon`;
+            }
+        });
+        document.addEventListener("DOMContentLoaded", async () => {
+            const params = new URLSearchParams(window.location.search);
+            const title = params.get("title");
+
+            if (!title) {
+                return alert("No product title found in URL.");
+            }
+
+            try {
+                const res = await fetch("http://localhost:3000/listings");
+                const listings = await res.json();
+
+                const product = listings.find(item => item.title === title);
+
+                if (!product) {
+                    return alert("Product not found.");
                 }
-            
-                try {
-                    const res = await fetch("http://localhost:3000/listings");
-                    const listings = await res.json();
-            
-                    const product = listings.find(item => item.title === title);
-            
-                    if (!product) {
-                        return alert("Product not found.");
-                    }
-        
-                    document.getElementById("product_image").src = product.image;
-            
-                    document.querySelector("#product_info_container h2").textContent = `${product.title} - ${product.price} Gold`;
-                    document.getElementById("description").textContent = product.description;
-            
-                    document.getElementById("user_name").textContent = "Posted By: Unknown";
-            
-                } catch (err) {
-                    console.error(err);
-                    alert("Failed to load product.");
-                }
-            });
-            </script>
-    </body>
+
+                // Update UI
+                document.getElementById("product_image").src = product.image;
+                document.querySelector("#product_info_container h2").textContent = `${product.title} - ${product.price} Gold`;
+                document.getElementById("description").textContent = product.description;
+                document.getElementById("user_name").textContent = "Posted By: Unknown";
+
+                // Store product for use in button
+                document.getElementById("add_to_cart").addEventListener("click", () => {
+                    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+                    cart.push(product);
+                    localStorage.setItem("cart", JSON.stringify(cart));
+                    alert("Item added to pouch!");
+                });
+
+            } catch (err) {
+                console.error(err);
+                alert("Failed to load product.");
+            }
+
+        });
+    </script>
+</body>
+
 </html>

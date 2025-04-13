@@ -1,34 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Trading Post Main Page</title>
+    <title>Trading Post Pouch</title>
     <link rel="stylesheet" href="TradingPost.css">
     <link rel="icon" href="./images/logo.png" type="image/x-icon">
 </head>
+
 <body>
     <div id="wrapper">
         <header id="banner">
             <div id="banner_wraps">
-                <a href="Index.html"><img id="left_content_img" src="images/logo.png" width="50px" height="50px" alt="Main Icon"></a>
+                <a href="Index.html"><img id="left_content_img" src="images/logo.png" width="50px" height="50px"
+                        alt="Main Icon"></a>
                 <h1>The Trading Post</h1>
-                <div id="search_container">
-                    <input type="text" id="search_bar" placeholder="Seek Out Goods...">
-                </div>
+
                 <a href="Pouch.html" id="cart_link">
                     <img src="images/pouch.png" width="50px" height="50px" alt="Cart Icon">
                 </a>
                 <a href="Profile.html" id="profile_link">
-                    <img id="right_content_img" src="images/SkullProfile.jpg" width="50px" height="50px"
-                        alt="Profile Icon">
-                </a>
+                    <img id="right_content_img" src="images/SkullProfile.jpg" width="50" height="50" alt="Profile Icon">
+                  </a>
             </div>
         </header>
 
-        <main>
-         
-        </main>
-    </div>
-    
+        <main id="pouch_container" class="cart_main">
+            <div id="cart_items">
+                <div id="cart_left">
+                    <div id="pouch_items_container"></div>
+                </div>
+                <div id="cart_right">
+                    <div id="cart_checkout">
+                        <div id="pouch_summary">
+                            
+                            <ul id="cost_breakdown" class="cart_add"></ul>
+                            <h3>Total: <span id="total_gold">0</span> Gold  <button id="checkout_button">Check Out</button></h3>
+                           
+                    
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
 </body>
+<script>
+     document.addEventListener("DOMContentLoaded", () => {
+    const user = JSON.parse(localStorage.getItem("loggedInUser"));
+    const profileImg = document.getElementById("right_content_img");
+
+    if (user && profileImg) {
+      profileImg.src = user.icon || "images/SkullProfile.jpg";
+      profileImg.alt = `${user.username}'s Profile Icon`;
+    }
+});
+   document.addEventListener("DOMContentLoaded", () => {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    const container = document.getElementById("pouch_items_container");
+    const totalDisplay = document.getElementById("total_gold");
+    const costBreakdown = document.getElementById("cost_breakdown");
+
+    let total = 0;
+
+    cart.forEach(item => {
+        total += item.price;
+
+        const li = document.createElement("li");
+        li.textContent = `${item.title}: ${item.price} Gold`;
+        costBreakdown.appendChild(li);
+
+        const itemDiv = document.createElement("div");
+        itemDiv.className = "pouch_item";
+        itemDiv.innerHTML = `
+            <div class="item_content">
+                <img src="${item.image}" width="240" height="240" alt="${item.title}">
+                <p class="cart_name">${item.title} - ${item.price} Gold: <br>
+                    <span class="cart_desc">${item.description}</span>
+                </p>
+            </div>
+        `;
+        container.appendChild(itemDiv);
+    });
+
+    totalDisplay.textContent = total;
+
+    document.getElementById("checkout_button").addEventListener("click", () => {
+        localStorage.removeItem("cart"); 
+        window.location.reload(); 
+    });
+   
+});
+
+</script>
+
 </html>

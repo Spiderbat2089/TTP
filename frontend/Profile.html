@@ -15,15 +15,12 @@
                 <a href="Index.html"><img id="left_content_img" src="images/logo.png" width="50" height="50"
                         alt="Main Icon"></a>
                 <h1>The Trading Post</h1>
-                <div id="search_container">
-                    <input type="text" id="search_bar" placeholder="Seek Out Goods...">
-                </div>
+
                 <a href="Pouch.html" id="cart_link">
                     <img src="images/pouch.png" width="50px" height="50px" alt="Cart Icon">
                 </a>
                 <a href="Profile.html" id="profile_link">
-                    <img id="right_content_img" src="images/SkullProfile.jpg" width="50px" height="50px"
-                        alt="Profile Icon">
+                    <img id="right_content_img" src="images/SkullProfile.jpg" width="50" height="50" alt="Profile Icon">
                 </a>
             </div>
         </header>
@@ -34,61 +31,50 @@
                     <img id="product_image" src="images/SkullProfile.jpg" width="360" height="360" alt="Profile Image">
                 </div>
                 <div id="product_info_container">
-                    <h2 id="username">Loading...</h2>
-                    <p id="user_name">Loading role...</p>
-                    <p id="user_description">Loading description...</p>
+                    <h2 id="username">Guest</h2>
+                    <p id="user_name">No Role</p>
+                    <p id="user_description">You have not input a description for your account</p>
 
-                    <button class="styled-button">Create Listing</button>
-                    <button class="styled-button">Account Options</button>
+                    <a href="ProductListing.html" class="button-link">Create Listing</a>
                     <a href="Login.html" class="button-link">Create Account</a>
+                    <button id="sign_out">Sign Out</button>
                 </div>
             </div>
         </main>
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", async () => {
-            try {
-                const urlParams = new URLSearchParams(window.location.search);
-                const username = urlParams.get("username");
+        document.addEventListener("DOMContentLoaded", () => {
+            const user = JSON.parse(localStorage.getItem("loggedInUser"));
+            const profileImg = document.getElementById("right_content_img");
 
-                if (!username) {
-                    alert("No username provided in URL.");
-                    return;
-                }
-
-                const response = await fetch(`http://localhost:3000/profile/${username}`);
-                if (!response.ok) throw new Error("User not found");
-
-                const user = await response.json();
-
-                document.querySelector("#product_image").src = user.iconPath || "images/SkullProfile.jpg";
-                document.querySelector("#product_image").alt = `${user.username}'s Profile Image`;
-                document.querySelector("#username").textContent = user.username;
-                document.querySelector("#user_name").textContent = user.role || "Adventurer";
-                document.querySelector("#user_description").textContent = user.description || "No description available.";
-
-                localStorage.setItem("loggedInUser", JSON.stringify(user));
-            } catch (error) {
-                console.error("Error loading profile:", error);
-                alert("Failed to load profile.");
+            if (user && profileImg) {
+                profileImg.src = user.icon || "images/SkullProfile.jpg";
+                profileImg.alt = `${user.username}'s Profile Icon`;
             }
+        });
+        document.addEventListener("DOMContentLoaded", () => {
+            const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
 
-            document.getElementById("create_listing").addEventListener("click", () => {
-                const user = JSON.parse(localStorage.getItem("loggedInUser"));
-                if (user) {
-                    window.location.href = `CreateListing.html?username=${encodeURIComponent(user.username)}`;
-                }
-            });
-
-            document.getElementById("account_options").addEventListener("click", () => {
-                alert("Feature coming soon!");
-            });
+            if (loggedInUser) {
+                document.querySelector("#product_image").src = loggedInUser.icon || "images/SkullProfile.jpg";
+                document.querySelector("#product_image").alt = `${loggedInUser.username}'s Profile Image`;
+                document.querySelector("#username").textContent = loggedInUser.username;
+                document.querySelector("#user_name").textContent = loggedInUser.role || "Adventurer";
+                document.querySelector("#user_description").textContent = loggedInUser.description || "No description available.";
+            } else {
+                alert("No user logged in.");
+            }
 
             document.getElementById("sign_out").addEventListener("click", () => {
                 localStorage.removeItem("loggedInUser");
                 window.location.href = "Index.html";
+                document.getElementById("sign_out").addEventListener("click", () => {
+                    localStorage.removeItem("loggedInUser");
+                    window.location.href = "Index.html";
+                });
             });
+
         });
     </script>
 </body>
