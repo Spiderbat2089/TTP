@@ -111,7 +111,11 @@ a:active {color: #836a49;}
               align-items: center;
               margin-left: auto;
               padding-right: 90px;}
-            
+#cart_link {display: flex;
+            align-items: center;
+            margin-left: auto;
+            padding-right: 90px;
+            }   
 #profile_link {position: absolute;
             top: 50%;
             right: 10px; 

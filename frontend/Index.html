@@ -1,29 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Trading Post Main Page</title>
     <link rel="stylesheet" href="TradingPost.css">
     <link rel="icon" href="./images/logo.png" type="image/x-icon">
 </head>
+
 <body>
     <div id="wrapper">
         <header id="banner">
             <div id="banner_wraps">
-                <a href="Index.html"><img id="left_content_img" src="images/logo.png" width="50px" height="50px" alt="Main Icon"></a>
+                <a href="Index.html"><img id="left_content_img" src="images/logo.png" width="50px" height="50px"
+                        alt="Main Icon"></a>
                 <h1>The Trading Post</h1>
                 <div id="search_container">
                     <input type="text" id="search_bar" placeholder="Seek Out Goods...">
                 </div>
-                <img id="cart_image" src="images/pouch.png" width="50px" height="50px" alt="Cart Icon">
+                <a href="Pouch.html" id="cart_link">
+                    <img src="images/pouch.png" width="50px" height="50px" alt="Cart Icon">
+                </a>
                 <a href="Profile.html" id="profile_link">
-                    <img id="right_content_img" src="images/SkullProfile.jpg" width="50px" height="50px" alt="Profile Icon">
+                    <img id="right_content_img" src="images/SkullProfile.jpg" width="50px" height="50px"
+                        alt="Profile Icon">
                 </a>
             </div>
         </header>
 
         <main id="product-list">
-         
+
         </main>
     </div>
     <script>
@@ -31,30 +37,31 @@
             try {
                 const response = await fetch("http://localhost:3000/listings");
                 const listings = await response.json();
-        
+
                 const container = document.getElementById("product-list");
-                container.innerHTML = ""; 
-        
+                container.innerHTML = "";
+
                 listings.forEach(item => {
                     const product = document.createElement("div");
                     product.className = "product_item";
-        
+
                     product.innerHTML = `
-                        <a href="Product1.html?title=${encodeURIComponent(item.title)}">
+                        <a href="Product.html?title=${encodeURIComponent(item.title)}">
                             <img src="${item.image}" width="240" height="240" alt="${item.title}">
                         </a>
                         <a href="Product.html?title=${encodeURIComponent(item.title)}">
                             <figcaption>${item.title}<br>${item.price} Gold</figcaption>
                         </a>
                     `;
-        
+
                     container.appendChild(product);
                 });
-        
+
             } catch (error) {
                 console.error("Failed to load listings:", error);
             }
         });
-        </script>
+    </script>
 </body>
+
 </html>
