@@ -1,7 +1,5 @@
 const express = require("express");
 const app = express();
-const bodyParser = require("body-parser");
-const fs = require("fs");
 const multer = require("multer");
 const path = require("path");
 
@@ -15,7 +13,7 @@ const storage = multer.diskStorage({
     },
     filename: (req, file, cb) => {
       // Save with the username in the filename
-      const ext = path.extname(file.originalname); // like .jpeg or .png
+      const ext = path.extname(file.originalname);
       cb(null, `${req.body.username}_icon${ext}`);
     }
 });
@@ -138,6 +136,34 @@ const listings = [
        image: "../../frontend/Images/product4.JPG"
     }
 ];
+
+//http://localhost:3000/search?q=searchQuery
+app.get('/search', async (req, res) => {
+    const searchQuery = req.query.q;
+
+    if (!searchQuery) {
+        return res.status(400).json({ error: 'Search query is required' });
+    }
+
+    try {
+        const results = await performSearch(searchQuery);
+
+        res.json(results);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+async function performSearch(query) {
+    const lowerCaseQuery = query.toLowerCase();
+
+    // Simulate async behavior like a DB call
+    return listings.filter(item =>
+        item.title.toLowerCase().includes(lowerCaseQuery)
+    );
+}
+
 app.post("/create_listing",  (req, res) => {
     
     const { listing } = req.body;
